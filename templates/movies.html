@@ -2,13 +2,12 @@
 {% block content %}
 <a href="/users"> Go to Users</a>
 <h1> Movies </h1>
-<!-- <div id="movie">
- --><ul style="display: inline-block;">
+<ul id="movie">
 
 {% for movie in movies %}
 <li> <a href="/movie_info/{{ movie.movie_id }}">{{ movie.title }}, {{ movie.released_at.year }} </a> </li>
 {% endfor %}
 </ul>
-<!-- </div> -->
+
 <img id="movie-image" src=http://www.keyslibraries.org/wp-content/uploads/2018/04/movie_reel.jpg>
 {% endblock %}

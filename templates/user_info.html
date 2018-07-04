@@ -6,6 +6,16 @@
 <h1> User Info </h1>
 <p> Age: {{ user.age }}</p>
 <p> Zipcode: {{ user.zipcode }} </p>
+<!-- {% if session.get("user_id") == user.user_id %}
+<h3> Update Info </h3>
+<form action="something" method="POST">
+<input type="hidden" name="user_id" value="{{ user.user_id }}">
+Update your age: <input type="number" name="age" min="0"required> <br>
+Update your zipcode:<input type="text" name="zipcode"required> <br>
+<input type="submit"> 
+</form>
+{% endif %} -->
+
 <p> Ratings <br>
     <ul>
         {% for rating in user.ratings %}
