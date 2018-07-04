@@ -2,11 +2,23 @@
 <html>
 <head>
   <title>Ratings</title>
+  <link rel="stylesheet" href="/static/style.css">
 </head>
 
 <body>
-  Ratings
+  <h3 id="rating">Ratings</h3>
+  <div id="logout"><a href= "/logout"> Logout</a></div>
   <hr>
+
+  {% with messages = get_flashed_messages() %}
+  {% if messages %}
+  <ul>
+    {% for message in messages %}
+      <li>{{ message }}</li>
+    {% endfor %}
+    </ul>
+  {% endif %}
+{% endwith %}
 
   {% block content %} put your content here {% endblock %}
 

@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+{% block content %}
+
+
+<a href="/movies"> Go to Movies </a>
+<h1> User Info </h1>
+<p> Age: {{ user.age }}</p>
+<p> Zipcode: {{ user.zipcode }} </p>
+<p> Ratings <br>
+    <ul>
+        {% for rating in user.ratings %}
+    <li> Rated movie {{ rating.movie.title }} {{ rating.score }} out of 5 </li>
+    {% endfor %}
+    </ul>
+</p>
+
+{% endblock %}
