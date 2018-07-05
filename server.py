@@ -28,7 +28,7 @@ def index():
 
 @app.route("/users")
 def show_users():
-
+    """ Shows a list of all users on site"""
     users = User.query.all()
 
     return render_template("user_list.html", users=users)
@@ -36,13 +36,31 @@ def show_users():
 
 @app.route("/user_info/<user_id>")
 def show_user_info(user_id):
+    """ Shows information on specific user"""
     user = User.query.filter_by(user_id=user_id).first()
 
     return render_template("user_info.html", user=user)
 
 
+@app.route("/update-user", methods=["POST"])
+def update_user():
+    """ Lets user update information if they are logged in"""
+    user_id = session.get("user_id")
+    age = request.form.get("age")
+    zipcode = request.form.get("zipcode")
+
+    user = User.query.filter_by(user_id=user_id).first()
+
+    user.age = age
+    user.zipcode = zipcode
+
+    flash("User information successfully updated")
+    return redirect("/user_info/{}".format(user_id))
+
+
 @app.route("/movies")
 def show_movies():
+    """ Shows all movies in database, in alphabetical order"""
     movies = Movie.query.order_by(Movie.title).all()
 
     return render_template("movies.html", movies=movies)
@@ -50,27 +68,25 @@ def show_movies():
 
 @app.route("/movie_info/<movie_id>")
 def show_movie_info(movie_id):
+    """ Shows information about a specific movie"""
     movie = Movie.query.filter_by(movie_id=movie_id).first()
 
     return render_template("movie_info.html", movie=movie)
 
 
-@app.route("/new-user")
-def show_form():
-    return render_template("new_user.html")
-
-
-@app.route("/add-movie", methods=["POST"])  # submit new user data
+@app.route("/add-rating", methods=["POST"])
 def add_movie():
-    movie_id = request.form["movie_id"]
-    rating = request.form["rating"]
-    user_id = session["user_id"]
+    """ Adds or updates rating associated for user in database"""
+    movie_id = request.form.get("movie_id")
+    rating = request.form.get("rating")
+    user_id = session,get("user_id")
 
     rating_q = Rating.query.filter(Rating.movie_id == movie_id, Rating.user_id == user_id).first()
 
     if rating_q:
         rating_q.score = rating
         flash("Rating successfully updated")
+
     else:
         new_rating = Rating(movie_id=movie_id, score=rating, user_id=user_id)
         db.session.add(new_rating)
@@ -80,37 +96,49 @@ def add_movie():
     return redirect("/movies")
 
 
-@app.route("/add-user", methods=["POST"])  # submit new user data
-def add_user():
-    email = request.form["email"]
-    password = request.form["password"]
+@app.route("/new-user")
+def show_form():
+    """Shows registration form for new user """
+    return render_template("new_user.html")
 
-    if not User.query.filter_by(email=email).first():
+
+@app.route("/add-user", methods=["POST"])
+def add_user():
+    """ Adds new user to database if email is not already present"""
+    email = request.form.get("email")
+    password = request.form.get("password")
+
+    if User.query.filter_by(email=email).first():
+        flash("Email already exists!")
+        return redirect("/new-user")
+
+    else:
         user = User(email=email, password=password)
         db.session.add(user)
         db.session.commit()
         flash("New user successfully added.")
         return redirect("/login")
-    else:
-        flash("Email already exists!")
-        return redirect("/new-user")
 
 
 @app.route("/login", methods=["GET"])
-def login():
+def show_login():
+    """ Shows login form"""
     return render_template("login.html")
 
 
 @app.route("/login", methods=["POST"])
-def actually_login():
-    email = request.form["email"]
-    password = request.form["password"]
+def login():
+    """ Logs in user if email and password submitted matches what is in database"""
+    email = request.form.get("email")
+    password = request.form.get("password")
+
     user = User.query.filter(User.email == email, User.password == password).first()
 
     if user:
         session["user_id"] = user.user_id
         flash("Logged In!")
         return redirect("/user_info/{}".format(user.user_id))
+
     else:
         flash("Incorrect email and/or password")
         return redirect("/login")
@@ -118,15 +146,17 @@ def actually_login():
 
 @app.route("/logout")
 def logout():
+    """ Logs out user """
     if session.get("user_id"):
         del session["user_id"]
+        # lets us do 'if key in session' checks instead of checking
+        # to see if the key value is None
         flash("Logged Out!")
+
     else:
         flash("You are not logged in")
+
     return redirect("/")
-
-
-
 
 
 if __name__ == "__main__":

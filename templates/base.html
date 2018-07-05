@@ -7,12 +7,18 @@
 
 <body>
   <h3 id="rating">Ratings</h3>
-  <div id="logout"><a href= "/logout"> Logout</a></div>
+  <div id="user-status">
+    {% if "user_id" in session %}
+      <a href= "/logout"> Logout</a>
+    {% else %}
+      <a href="/login"> Login </a>
+    {% endif %}
+  </div>
   <hr>
 
   {% with messages = get_flashed_messages() %}
   {% if messages %}
-  <ul>
+  <ul id="flash">
     {% for message in messages %}
       <li>{{ message }}</li>
     {% endfor %}

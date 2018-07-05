@@ -9,7 +9,7 @@
 
 {% if "user_id" in session %}
 <h2> New Rating </h2>
-<form id="new-rating" action = "/add-movie" method = "POST">
+<form id="new-rating" action = "/add-rating" method = "POST">
     <input type="hidden" name="movie_id" value="{{ movie.movie_id }}">
     Please enter your rating for the movie <input type="number" max="5" min="0" name="rating" required>
     <br>
@@ -17,12 +17,12 @@
 </form>
 {% endif %}
 
-<p> Ratings <br>
+<h3>Ratings</h3>
     <ul>
         {% for rating in movie.ratings %}
-    <li> User {{ rating.user.user_id }} rated movie {{ rating.score }} out of 5 </li>
+    <li> User <a href="/user_info/{{ rating.user.user_id}}">{{ rating.user.user_id }}</a> rated movie {{ rating.score }} out of 5 </li>
     {% endfor %}
     </ul>
-</p>
+
 
 {% endblock %}
