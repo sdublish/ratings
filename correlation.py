@@ -31,4 +31,4 @@ def pearson(pairs):
     if denominator == 0:
         return 0
 
-    return numerator // denominator
+    return numerator / denominator

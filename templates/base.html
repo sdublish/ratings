@@ -7,9 +7,11 @@
 
 <body>
   <h3 id="rating">Ratings</h3>
+  <div id="home"> <a href="/">Homepage</a></div>
   <div id="user-status">
     {% if "user_id" in session %}
-      <a href= "/logout"> Logout</a>
+      <a href= "/logout"> Logout</a><br>
+      <a href="/user_info/{{ session['user_id'] }}">Profile page</a>
     {% else %}
       <a href="/login"> Login </a>
     {% endif %}

@@ -2,8 +2,11 @@ body {
     background-color: lightblue;
 }
 
-#rating, #user-status {
+#rating, #user-status, #home {
     text-align: center;
+}
+#home a{
+    color:darkgreen;
 }
 
 #movie{
@@ -19,4 +22,12 @@ body {
 }
 #flash li {
     text-align: center
+}#eye-headline{
+    display: inline-block;
+    padding-bottom: 10px;
+}
+.eye-image{
+    width: 10%;
+    height: 10%;
+
 }

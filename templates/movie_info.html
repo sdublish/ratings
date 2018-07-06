@@ -6,8 +6,23 @@
 
 <p> <a href="{{ movie.imdb_url }}">Click here to go the IMDB page </a> </p>
 
+<p>Average rating: {{ average }}</p>
 
 {% if "user_id" in session %}
+
+{% if user_rating %}
+<p> User rating: {{ user_rating.score }} </p>
+{% else %}
+{% if prediction %}
+    <p>We predict you will rate this movie {{ prediction }}.</p>
+{% endif %}
+{% endif %}
+
+{% if beratement %}
+     <img  class="eye-image" src="http://mythologian.net/wp-content/uploads/2018/03/All-Seeing-Eye-Eye-Of-Providence-Symbol-And-Its-Meaning.png"><h3 id="eye-headline">THE EYE'S JUDGEMENT</h3> <img  class="eye-image" src="http://mythologian.net/wp-content/uploads/2018/03/All-Seeing-Eye-Eye-Of-Providence-Symbol-And-Its-Meaning.png">
+    <p> {{ beratement }} </p>
+{% endif %}
+
 <h2> New Rating </h2>
 <form id="new-rating" action = "/add-rating" method = "POST">
     <input type="hidden" name="movie_id" value="{{ movie.movie_id }}">

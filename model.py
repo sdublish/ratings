@@ -1,6 +1,7 @@
 """Models and database functions for Ratings project."""
 
 from flask_sqlalchemy import SQLAlchemy
+from correlation import pearson
 
 # This is the connection to the PostgreSQL database; we're getting this through
 # the Flask-SQLAlchemy helper library. On this, we can find the `session`
@@ -28,9 +29,49 @@ class User(db.Model):
 
         return f"<User user_id={self.user_id} email={self.email}>"
 
+    def similarity(self, other):
+        """Return Pearson rating for user compared to other user."""
 
+        user1_ratings = {}  # will contain a dictionary of Rating objects by user1, key as movie id
+        paired_ratings = []
 
-# Put your Movie and Rating model classes here.
+        for r in self.ratings:  # self.ratings = list of ratings
+            user1_ratings[r.movie_id] = r
+
+        for r in other.ratings:  # iterating through the ratings of user2
+            user1_r = user1_ratings.get(r.movie_id)
+            if user1_r:  # if user has rated this movie
+                paired_ratings.append((user1_r.score, r.score))
+
+        if paired_ratings:  # if there are any tuples in paired_ratings
+            return pearson(paired_ratings)
+
+        else:
+            return 0.0
+
+    def predict_rating(self, movie):
+        """Predict user's rating of a movie."""
+
+        other_ratings = movie.ratings
+
+        similarities = [
+            (self.similarity(r.user), r)
+            for r in other_ratings
+        ]
+
+        similarities.sort(key=lambda x: x[0], reverse=True)
+
+        similarities = [(sim, r) for sim, r in similarities
+                        if sim > 0]
+
+        if not similarities:
+            return None
+
+        numerator = sum([r.score * sim for sim, r in similarities])
+        denominator = sum([sim for sim, r in similarities])
+
+        return numerator / denominator
+
 
 class Movie(db.Model):
     __tablename__ = "movies"
@@ -45,16 +86,17 @@ class Movie(db.Model):
 
         return f"<Movie movie_id={self.movie_id} title={self.title} released_at={self.released_at}>"
 
+
 class Rating(db.Model):
 
-    __tablename__= "ratings"
+    __tablename__ = "ratings"
 
     rating_id = db.Column(db.Integer, autoincrement=True, primary_key=True)
     movie_id = db.Column(db.Integer, db.ForeignKey("movies.movie_id"), nullable=False)
-    user_id =  db.Column(db.Integer, db.ForeignKey("users.user_id"), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey("users.user_id"), nullable=False)
     score = db.Column(db.Integer, nullable=False)
 
-     # Define relationship to user
+    # Define relationship to user
     user = db.relationship("User",
                            backref=db.backref("ratings",
                                               order_by=rating_id))
@@ -66,10 +108,12 @@ class Rating(db.Model):
 
     def __repr__(self):
         """Provide helpful representation when printed."""
-
         return f"<Rating rating_id={self.rating_id} score={self.score}>"
+
+
 ##############################################################################
 # Helper functions
+
 
 def connect_to_db(app):
     """Connect the database to our Flask app."""
